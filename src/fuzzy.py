@@ -23,12 +23,12 @@ def membership_high(value):
     return (value - 40) / 20
 
 
-def calculate_fuzzy_risk(tfidf_score, rule_score):
+def calculate_fuzzy_risk(model_score, rule_score):
 
-    # Membership values for TF-IDF score
-    text_low = membership_low(tfidf_score)
-    text_medium = membership_medium(tfidf_score)
-    text_high = membership_high(tfidf_score)
+    # Membership values for Naive Bayes model score
+    text_low = membership_low(model_score)
+    text_medium = membership_medium(model_score)
+    text_high = membership_high(model_score)
 
     # Membership values for rule-based score
     rule_low = membership_low(rule_score)
@@ -41,12 +41,18 @@ def calculate_fuzzy_risk(tfidf_score, rule_score):
     medium_strength = max(
         min(text_medium, rule_medium),
         min(text_low, rule_medium),
-        min(text_medium, rule_low)
+        min(text_medium, rule_low),
+        min(text_high, rule_low)
     )
 
-    high_strength = max(text_high, rule_high)
+    high_strength = max(
+    min(text_high, rule_high),
+    min(text_high, rule_medium),
+    min(text_medium, rule_high),
+    min(text_low, rule_high),
+    )
 
-    # Output values for each category
+    # Output values
     low_output = 15
     medium_output = 50
     high_output = 85

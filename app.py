@@ -273,7 +273,7 @@ st.markdown("""
       <h1>InternShield</h1>
       <h2>Simple Internship Offer Risk Analyzer</h2>
       <p>Paste an internship offer and let InternShield help you spot<br>
-      potential risks using TF-IDF, Rule-Based Systems and Fuzzy Logic.</p>
+      potential risks using TF-IDF, Naive Bayes, Rule-Based Systems and Fuzzy Logic.</p>
     </div>
   </div>
 
@@ -320,7 +320,7 @@ with form_col:
         with st.form("offer_form", clear_on_submit=False):
             offer_text = st.text_area(
                 "Internship offer description",
-                height=205,
+                height=205, 
                 placeholder="Paste the complete internship message, email, or job description here..."
             )
             st.markdown("**Additional information**")
@@ -366,19 +366,27 @@ with result_col:
             <span class="risk-pill" style="color:{risk_color};background:{risk_bg};"> {risk.upper()} RISK </span>
             """, unsafe_allow_html=True)
             st.progress(max(0, min(100, int(round(score)))))
-            m1, m2 = st.columns(2)
+            m1, m2, m3 = st.columns(3)
             with m1:
                 st.markdown(f"""
                 <div class="metric-box">
-                  <div class="metric-name">TF-IDF TEXT SCORE</div>
-                  <div class="metric-value">{float(result["tfidf_score"]):.1f}<span style="font-size:.8rem;"> / 100</span></div>
+                <div class="metric-name">TF-IDF SCORE</div>
+                <div class="metric-value">{float(result["tfidf_score"]):.1f}<span style="font-size:.8rem;"> / 100</span></div>
                 </div>
                 """, unsafe_allow_html=True)
             with m2:
                 st.markdown(f"""
                 <div class="metric-box">
-                  <div class="metric-name">RULE-BASED SCORE</div>
-                  <div class="metric-value">{float(result["rule_score"]):.1f}<span style="font-size:.8rem;"> / 100</span></div>
+                <div class="metric-name">NAIVE BAYES SCORE</div>
+                <div class="metric-value">{float(result["model_score"]):.1f}<span style="font-size:.8rem;"> / 100</span></div>
+                <div style="font-size:.75rem;color:#526987;margin-top:4px;">{result["model_prediction"]}</div>
+                </div>
+                """, unsafe_allow_html=True)
+            with m3:
+                st.markdown(f"""
+                <div class="metric-box">
+                <div class="metric-name">RULE-BASED SCORE</div>
+                <div class="metric-value">{float(result["rule_score"]):.1f}<span style="font-size:.8rem;"> / 100</span></div>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -392,8 +400,9 @@ with result_col:
 
             st.markdown("""
             <div style="font-size:.78rem;color:#71839B;line-height:1.55;margin-top:15px;">
-              The text is assessed using TF-IDF, additional answers are checked by
-              the rule-based system, and fuzzy logic combines the risk signals.
+                TF-IDF extracts text features, Naive Bayes predicts the offer category,
+                the rule-based system checks additional answers, and fuzzy logic combines
+                the model and rule-based scores.
             </div>
             """, unsafe_allow_html=True)
 

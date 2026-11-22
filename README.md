@@ -1,121 +1,311 @@
-# InternShield
+# 🛡️ InternShield
+### AI-Powered Internship Scam Detection System
 
-**Be Safe. Intern Smart.**
+InternShield is an AI-powered internship offer analysis system designed to help students identify potentially fraudulent internship opportunities before sharing personal information or making payments.
 
-InternShield is a Streamlit-based tool that helps students review internship offers for potential warning signs. It analyses the offer description using a TF-IDF-based text warning score, checks additional information through predefined IF-THEN rules, and combines the two signals using fuzzy logic.
+It combines **Natural Language Processing (NLP), Machine Learning, Rule-Based Systems, and Fuzzy Logic** to analyze internship descriptions and additional information provided by users.
 
-> **Disclaimer:** InternShield provides an educational risk estimate based on the information entered. It does not independently verify companies or recruiters, and its scores are not probabilities of fraud. A low score does not guarantee that an offer is genuine.
+The system generates an overall risk score, classifies the offer into a risk category, and highlights potential warning signals.
 
-## Features
+---
 
-- **TF-IDF text analysis:** Converts the offer description into numerical features and calculates a warning score using a predefined set of suspicious terms.
-- **Rule-based checks:** Evaluates answers about upfront fees, interviews, recruiter verification, and company verification.
-- **Fuzzy risk assessment:** Combines the text and rule-based scores to produce an overall risk score and a Low, Medium, or High risk category.
-- **Explanation of findings:** Displays the rule-based warning signals that were triggered.
+## 🚀 Key Features
 
-## How it works
+- **AI-Based Text Analysis:** Uses TF-IDF to convert internship descriptions into numerical text features.
+- **Machine Learning Classification:** Uses Multinomial Naive Bayes to predict whether an internship offer is likely genuine or fraudulent.
+- **Rule-Based Detection:** Evaluates additional information such as registration fees, recruiter verification, interview procedures, and company verification.
+- **Fuzzy Logic:** Combines machine learning and rule-based scores to calculate an overall risk score.
+- **Risk Classification:** Categorizes internship offers into Low, Medium, and High Risk.
+- **Interactive Interface:** Provides a Streamlit-based interface for submitting and analyzing internship offers.
+- **Warning Signals:** Displays findings from the rule-based detection system.
 
-1. Paste the internship offer description into the app.
-2. Answer the additional questions about payment, interview status, and independent verification.
-3. InternShield calculates a TF-IDF text warning score.
-4. The rule-based system calculates a score from the additional answers.
-5. Fuzzy logic combines both scores and displays the overall assessment.
+---
 
-The text score is a transparent, term-based warning score. **It is not a separately trained fraud-classification model.**
+## 🧠 How InternShield Works
 
-## Tech stack
+InternShield uses four main components to analyze an internship offer.
+
+### 1. TF-IDF (Text Feature Extraction)
+
+TF-IDF (Term Frequency–Inverse Document Frequency) converts textual internship descriptions into numerical representations.
+
+It helps identify important words and phrases in an offer that can be used by the machine learning model.
+
+InternShield uses:
+- Lowercase text processing
+- English stop-word removal
+- Unigrams and bigrams
+- A maximum of 20,000 features
+
+The application also calculates a separate heuristic suspicious-text score using a predefined list of suspicious terms.
+
+### 2. Multinomial Naive Bayes
+
+A Multinomial Naive Bayes classifier is trained on the processed internship dataset.
+
+It learns patterns associated with genuine and fraudulent internship descriptions.
+
+The classifier produces:
+- Predicted category: Likely Genuine or Likely Fake
+- Estimated scam-class probability
+
+### 3. Rule-Based Detection
+
+The rule-based system evaluates additional information supplied by the user.
+
+| Condition | Risk Points |
+|---|---:|
+| Company asks for money | +40 |
+| No interview conducted | +15 |
+| Recruiter not independently verified | +25 |
+| Company not independently verified | +20 |
+
+The total score is capped at 100.
+
+### 4. Fuzzy Logic
+
+Fuzzy Logic combines the Naive Bayes scam probability and rule-based score.
+
+Both inputs are evaluated using three membership categories:
+
+- Low
+- Medium
+- High
+
+The fuzzy inference system applies IF–THEN rules, aggregates their strengths, and calculates a final risk score using weighted output values.
+
+The final score is classified as:
+
+| Risk Score | Risk Level |
+|---|---|
+| Below 35 | Low |
+| 35–59.9 | Medium |
+| 60–100 | High |
+
+---
+
+## 🔄 System Architecture
+
+```text
+           User Input
+                |
+                v
+       Internship Description
+                |
+         Additional Questions
+                |
+        +-------+-------+
+        |               |
+        v               v
+   TF-IDF +          Rule-Based
+   Naive Bayes        Detection
+        |               |
+        v               v
+   Scam Probability   Rule Score
+        |               |
+        +-------+-------+
+                |
+                v
+           Fuzzy Logic
+                |
+                v
+        Final Risk Score
+                |
+                v
+       Low / Medium / High
+                |
+                v
+        Streamlit Dashboard
+```
+
+---
+
+## 📊 Dataset
+
+InternShield uses a synthetic internship-offer dataset containing **10,000 records**.
+
+| Category | Records |
+|---|---:|
+| Genuine Internship Offers | 5,000 |
+| Fraudulent Internship Offers | 5,000 |
+| Total | 10,000 |
+
+Dataset columns:
+
+- `description`: Internship offer description.
+- `is_scam`: Classification label (0 = Genuine, 1 = Fraudulent).
+
+The dataset is preprocessed to remove empty descriptions, invalid labels, duplicate records, and conflicting descriptions.
+
+**Note:** The dataset is synthetically generated and should not be considered a substitute for a large, independently verified collection of real internship offers.
+
+---
+
+## 📈 Model Evaluation
+
+The Naive Bayes model was evaluated using an 80:20 stratified train-test split.
+
+- Training records: 8,000
+- Testing records: 2,000
+
+### Evaluation Results
+
+| Metric | Score |
+|---|---:|
+| Accuracy | 96.55% |
+| Precision | 96.69% |
+| Recall | 96.40% |
+| F1 Score | 96.54% |
+| PR-AUC | 96.34% |
+
+### Confusion Matrix
+
+| | Predicted Genuine | Predicted Fake |
+|---|---:|---:|
+| Actual Genuine | 967 | 33 |
+| Actual Fake | 36 | 964 |
+
+These results represent performance on the synthetic dataset's held-out test split. They do not establish equivalent performance on real-world internship offers.
+
+---
+
+## 🛠️ Technology Stack
 
 | Technology | Purpose |
-| --- | --- |
-| Python | Core application logic |
-| Streamlit | Interactive web interface |
-| scikit-learn | TF-IDF vectorization |
-| CSV | Stores the sample offer descriptions used to fit the TF-IDF vocabulary |
+|---|---|
+| Python | Core programming language |
+| Pandas | Dataset processing |
+| Scikit-learn | TF-IDF and Naive Bayes |
+| NumPy | Numerical operations |
+| Joblib | Saving and loading trained models |
+| Streamlit | Interactive web application |
+| Fuzzy Logic | Final risk assessment |
 
-## Project structure
+---
+
+## 📁 Project Structure
 
 ```text
 InternShield/
+│
 ├── app.py
 ├── requirements.txt
+├── README.md
+├── .gitignore
+│
 ├── data/
-│   └── sample_offers.csv
+│   ├── raw/
+│   │   └── internshield_synthetic_dataset.csv
+│   │
+│   └── processed/
+│       └── internship_offers.csv
+│
+├── models/
+│   ├── tfidf_vectorizer.pkl
+│   └── naive_bayes_model.pkl
+│
 └── src/
     ├── __init__.py
-    ├── analyzer.py
-    ├── fuzzy.py
+    ├── data_preprocessing.py
+    ├── train_model.py
+    ├── evaluate_model.py
+    ├── text_model.py
     ├── rules.py
-    └── text_model.py
+    ├── fuzzy.py
+    └── analyzer.py
 ```
 
-- `app.py` — Streamlit interface for entering and analysing offers.
-- `src/analyzer.py` — Connects the text analysis, rule checks, and fuzzy risk calculation.
-- `src/text_model.py` — Fits the TF-IDF vectorizer on the included sample descriptions and calculates the text warning score.
-- `src/rules.py` — Applies the predefined IF-THEN checks to the user's answers.
-- `src/fuzzy.py` — Combines the two scores and assigns the final risk category.
-- `data/sample_offers.csv` — Small educational dataset containing example offer descriptions.
+---
 
-## Getting started
-
-### Requirements
-
-- Python 3.10 or later
-- pip
+## ⚙️ Installation and Setup
 
 ### 1. Clone the repository
 
 ```bash
 git clone https://github.com/vs-learner-chhavi/InternShield.git
+```
+
+### 2. Navigate to the project directory
+
+```bash
 cd InternShield
 ```
 
-### 2. Create and activate a virtual environment
-
-**macOS / Linux**
+### 3. Create a virtual environment
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
+python -m venv .venv
 ```
 
-**Windows PowerShell**
+Activate it on Windows:
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+.venv\Scripts\activate
 ```
 
-### 3. Install dependencies
+### 4. Install dependencies
 
 ```bash
-python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 4. Run the application
+### 5. Prepare the dataset
 
 ```bash
-python -m streamlit run app.py
+python -m src.data_preprocessing
 ```
 
-Streamlit will display a local URL in the terminal (usually http://localhost:8501). Open it in your browser to use InternShield.
+### 6. Train the model
 
-No separate model-training command is required. The TF-IDF vectorizer is fitted on the included sample descriptions when the application imports the text-analysis module.
+```bash
+python -m src.train_model
+```
 
-## Understanding the scores
+This generates the trained TF-IDF vectorizer and Naive Bayes model inside the `models/` directory.
 
-- **TF-IDF text score:** Measures the share of the offer's TF-IDF weight associated with the predefined warning terms. It is a text-based indicator, not a probability.
-- **Rule-based score:** Adds risk points for selected answers: an upfront fee, no interview, an unverified recruiter, or an unverified company. Unknown answers do not add points.
-- **Overall risk score:** Fuzzy logic combines the text and rule-based signals and assigns a Low, Medium, or High category.
+### 7. Run the application
 
-## Limitations and safe use
+```bash
+streamlit run app.py
+```
 
-- The included dataset is small and intended for educational demonstration, not reliable real-world fraud detection.
-- The TF-IDF component uses predefined warning terms; it does not understand the full meaning or context of an offer.
-- The app relies on the information entered by the user. It does not browse the internet or independently verify an organisation, recruiter, email address, or job posting.
-- A low score does not prove that an offer is legitimate, and a high score is not definitive proof of fraud.
-- Do not share sensitive identity or banking information with an unverified recruiter. Check opportunities through the organisation's official website and independently confirmed contact details.
+The Streamlit application will open in your browser.
 
 ---
 
-**InternShield · Be Safe. Intern Smart.**
+## 🧪 Testing and Evaluation
+
+Evaluate the model:
+
+```bash
+python -m src.evaluate_model
+```
+
+---
+
+## ⚠️ Limitations
+
+- The model is trained on a synthetic dataset, so its predictions may not generalize to real-world internship scams.
+- Naive Bayes probabilities are model estimates and are not necessarily calibrated real-world fraud probabilities.
+- The rule-based system depends on the accuracy of information entered by the user.
+- The system does not independently verify company registrations, recruiter identities, or internship offers.
+- A low-risk classification does not guarantee that an internship offer is genuine.
+
+InternShield should be treated as a preliminary risk-assessment tool, not a definitive fraud verification service.
+
+---
+
+## 🔮 Future Improvements
+
+- Evaluate the system on independently collected, real-world internship offers.
+- Integrate explainable AI techniques to highlight suspicious words and phrases.
+- Add company and recruiter verification through reliable external sources.
+- Improve detection of phishing links and suspicious communication patterns.
+- Develop a browser extension for analyzing internship offers directly from websites.
+- Expand the dataset with diverse, independently verified examples.
+- Improve model evaluation through cross-validation and probability calibration.
+
+---
+
+
+*InternShield — Helping students make safer internship decisions through AI.*
