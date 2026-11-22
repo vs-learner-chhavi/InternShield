@@ -1,89 +1,121 @@
-# InternShield — Simple AI Project
+# InternShield
 
-InternShield is a beginner-friendly internship offer risk analyser built using only three syllabus concepts:
+**Be Safe. Intern Smart.**
 
-1. **TF-IDF (Unit II):** Converts offer text into numerical features.
-2. **Rule-Based System (Unit II):** Applies simple IF-THEN rules to the information supplied by the user.
-3. **Fuzzy Logic (Unit III):** Combines the two risk scores and produces Low, Medium or High risk.
+InternShield is a Streamlit-based tool that helps students review internship offers for potential warning signs. It analyses the offer description using a TF-IDF-based text warning score, checks additional information through predefined IF-THEN rules, and combines the two signals using fuzzy logic.
 
-## 1. Project flow
+> **Disclaimer:** InternShield provides an educational risk estimate based on the information entered. It does not independently verify companies or recruiters, and its scores are not probabilities of fraud. A low score does not guarantee that an offer is genuine.
 
-Internship description
-→ TF-IDF text analysis
-→ Rule-Based System
-→ Fuzzy Logic
-→ Final risk assessment
+## Features
 
-## 2. Requirements
+- **TF-IDF text analysis:** Converts the offer description into numerical features and calculates a warning score using a predefined set of suspicious terms.
+- **Rule-based checks:** Evaluates answers about upfront fees, interviews, recruiter verification, and company verification.
+- **Fuzzy risk assessment:** Combines the text and rule-based scores to produce an overall risk score and a Low, Medium, or High risk category.
+- **Explanation of findings:** Displays the rule-based warning signals that were triggered.
+
+## How it works
+
+1. Paste the internship offer description into the app.
+2. Answer the additional questions about payment, interview status, and independent verification.
+3. InternShield calculates a TF-IDF text warning score.
+4. The rule-based system calculates a score from the additional answers.
+5. Fuzzy logic combines both scores and displays the overall assessment.
+
+The text score is a transparent, term-based warning score. **It is not a separately trained fraud-classification model.**
+
+## Tech stack
+
+| Technology | Purpose |
+| --- | --- |
+| Python | Core application logic |
+| Streamlit | Interactive web interface |
+| scikit-learn | TF-IDF vectorization |
+| CSV | Stores the sample offer descriptions used to fit the TF-IDF vocabulary |
+
+## Project structure
+
+```text
+InternShield/
+├── app.py
+├── requirements.txt
+├── data/
+│   └── sample_offers.csv
+└── src/
+    ├── __init__.py
+    ├── analyzer.py
+    ├── fuzzy.py
+    ├── rules.py
+    └── text_model.py
+```
+
+- `app.py` — Streamlit interface for entering and analysing offers.
+- `src/analyzer.py` — Connects the text analysis, rule checks, and fuzzy risk calculation.
+- `src/text_model.py` — Fits the TF-IDF vectorizer on the included sample descriptions and calculates the text warning score.
+- `src/rules.py` — Applies the predefined IF-THEN checks to the user's answers.
+- `src/fuzzy.py` — Combines the two scores and assigns the final risk category.
+- `data/sample_offers.csv` — Small educational dataset containing example offer descriptions.
+
+## Getting started
+
+### Requirements
 
 - Python 3.10 or later
-- Internet connection only to install the packages for the first time
+- pip
 
-## 3. Setup on Windows PowerShell
+### 1. Clone the repository
 
-Open PowerShell in the project folder and run:
+```bash
+git clone https://github.com/vs-learner-chhavi/InternShield.git
+cd InternShield
+```
+
+### 2. Create and activate a virtual environment
+
+**macOS / Linux**
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+**Windows PowerShell**
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-streamlit run app.py
 ```
 
-The app will open in your browser. The sample dataset is already included. The TF-IDF vocabulary and word weights are prepared automatically when the app starts; you do not need to run a separate training command.
+### 3. Install dependencies
 
-## 4. How the three concepts work
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
 
-### Concept 1 — TF-IDF
+### 4. Run the application
 
-TF-IDF means Term Frequency–Inverse Document Frequency. It converts words in internship descriptions into numerical values. Words that are useful for distinguishing documents can receive higher weights.
+```bash
+python -m streamlit run app.py
+```
 
-The TF-IDF assigns numerical weights to words in the offer. The program adds the weights of selected warning terms and calculates a simple text warning score. This keeps the project limited to the three selected syllabus concepts.
+Streamlit will display a local URL in the terminal (usually http://localhost:8501). Open it in your browser to use InternShield.
 
-**Viva point:** TF-IDF converts text into numerical features. In this project, the weights of selected warning terms are used to create a simple text warning score. There is no separate machine-learning classifier.
+No separate model-training command is required. The TF-IDF vectorizer is fitted on the included sample descriptions when the application imports the text-analysis module.
 
-### Concept 2 — Rule-Based System
+## Understanding the scores
 
-The program checks four conditions:
+- **TF-IDF text score:** Measures the share of the offer's TF-IDF weight associated with the predefined warning terms. It is a text-based indicator, not a probability.
+- **Rule-based score:** Adds risk points for selected answers: an upfront fee, no interview, an unverified recruiter, or an unverified company. Unknown answers do not add points.
+- **Overall risk score:** Fuzzy logic combines the text and rule-based signals and assigns a Low, Medium, or High category.
 
-- If the offer asks for an upfront payment, add 40 risk points.
-- If no interview was conducted, add 15 points.
-- If the recruiter is not independently verified, add 25 points.
-- If the company is not independently verified, add 20 points.
+## Limitations and safe use
 
-Unknown answers do not add points. The total is capped at 100.
+- The included dataset is small and intended for educational demonstration, not reliable real-world fraud detection.
+- The TF-IDF component uses predefined warning terms; it does not understand the full meaning or context of an offer.
+- The app relies on the information entered by the user. It does not browse the internet or independently verify an organisation, recruiter, email address, or job posting.
+- A low score does not prove that an offer is legitimate, and a high score is not definitive proof of fraud.
+- Do not share sensitive identity or banking information with an unverified recruiter. Check opportunities through the organisation's official website and independently confirmed contact details.
 
-**Viva point:** A rule-based system uses predefined IF-THEN statements to make decisions.
+---
 
-### Concept 3 — Fuzzy Logic
-
-Fuzzy logic handles situations that are not simply true or false. It calculates membership in three categories:
-
-- Low
-- Medium
-- High
-
-The app averages the ML score and rule score, calculates membership values, and combines them into one final score. It then displays:
-
-- Below 35: Low risk
-- 35 to below 65: Medium risk
-- 65 or above: High risk
-
-**Viva point:** Fuzzy logic helps represent degrees of risk instead of treating every offer as completely safe or completely fraudulent.
-
-## 5. Important limitations
-
-- The included dataset is small and educational. It is not suitable for real-world fraud detection.
-- Model scores are not calibrated probabilities that an offer is fraudulent.
-- The app does not browse the internet or independently verify companies or recruiters.
-- A low risk score does not prove that an internship is genuine.
-- Always verify an offer through the company's official website and independently confirmed contact details.
-
-## 6. Project files
-
-- `app.py` — Streamlit user interface.
-- `src/text_model.py` — TF-IDF text analysis.
-- `src/rules.py` — IF-THEN rules.
-- `src/fuzzy.py` — Fuzzy risk calculation.
-- `src/analyzer.py` — Connects the three concepts.
-- `data/sample_offers.csv` — Small example training dataset.
+**InternShield · Be Safe. Intern Smart.**
